@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="js/jquery-2.1.0.js" ></script>
+		<script type="text/javascript">
+			var res = null;
+			$(function(){
+				$('#btn1').click(function(){
+//					\application/json
+//application/xml
+//application/json
+					var myHeaders = new Headers({
+					  "Content-Type": "application/xml",
+					  "X-Custom-Header": "ProcessThisImmediately",
+					  'Origin':"http://mybank.com"
+					});
+
+//					var formElement = document.querySelector("form");
+//					var formData = new FormData(formElement);
+//					formData.append("username", "Groucho");
+//					formData.append("accountnum", 123456); // number 123456 is immediately converted to a string "123456"
+var formData = new FormData();
+
+formData.append("username", "Groucho");
+formData.append("accountnum", 123456); // number 123456 is immediately converted to a string "123456"
+
+					var myInit = { method: 'POST',
+					               headers: myHeaders,
+					               body:'{"name":"aaa","sex":"bb"}',
+					               mode: 'cors',
+					               cache: 'default' };
+					
+					fetch('http://localhost:8090/dist/a.xml',myInit)
+					.then(function(response) {
+						res= response;
+						console.log(response);
+					})
+					.catch(function(error) {
+					  console.log('There has been a problem with your fetch operation: ' + error.message);
+					});;
+				})
+			})
+		</script>
+	</head>
+	<body>
+		<input id="btn1" type="button" value="fetch" />
+		<form id="form"  action="http://localhost:8090/WebPrj/HelloServlet.do" method="post">
+			用户名：<input name="username" /><br />
+			密码：<input name="pwd" type="password" /><br />
+			<input type="submit" value="提交" />
+		</form>
+	</body>
+</html>

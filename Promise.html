@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+	<script type="text/javascript">
+		
+		var p1 = Promise.resolve(3);
+		var p2 = 1337;
+		var p3 = new Promise((resolve, reject) => {
+		  setTimeout(resolve, 100, "foo");
+		}); 
+		var p4 = new Promise((resolve, reject) => {
+		  reject(new Error('sss'));
+		});
+		
+		Promise.all([p4, p2, p3,p1]).then(values => { 
+		  console.log(values); // [3, 1337, "foo"] 
+		},(reason)=>{
+			console.log(reason)
+		}).catch((reason)=>{
+			console.log('reason')
+		})
+
+	</script>
+</html>
