@@ -3,7 +3,28 @@
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
+		
+		<script src="../js/jquery-2.1.0.js"></script>
+		<script type="text/javascript">
+			var isdown = false;
+			$(function(){
+				$(window).mousemove(function(e){
+					console.log(111)
+				})
+				
+				$(window).mousedown(function(e){
+					isdown = true;
+				})
+				
+				$(window).mouseup(function(e){
+					isdown = false;
+				})
+			})
+		</script>
 	</head>
 	<body>
+		<svg style="width: 100px; height: 100px; clip-path: inherit;">
+			<rect x="0" y="0" width="200px" height="200px" style="fill: red;"/>
+		</svg>
 	</body>
 </html>

@@ -86,11 +86,15 @@
 			console.log(window)
 
 		}
+		
+		function aaClick(e){
+			console.log(e)
+		}
 	</script>
 
 	<body>
 
-		<div class="main" ondrop="drop(event)" ondragover="allowDrop(event)" >
+		<div class="main" onclick="aaClick(event)" ondrop="drop(event)" ondragover="allowDrop(event)" >
 
 			<div id="a1" class="one d" draggable="true" ondragstart="dragstart(event)">
 
