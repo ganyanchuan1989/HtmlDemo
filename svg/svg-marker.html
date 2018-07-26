@@ -20,35 +20,52 @@
 		
 		<svg version="1.1" xmlns="http://www.w3.org/2000/svg">
 			<defs>
-				<marker id="mCircle" markerWith="10" markerHeight="10" refX="5" refY="5">
+				<marker id="mCircle" markerWidth="10" markerHeight="10" refX="5" refY="5">
 					<circle cx="5" cy="5" r="4" style="fill: none; stroke: black;"/>
 				</marker>
-				<marker id="mArrow" markerWith="5" markerHeight="8" refX="0" refY="4" orient="auto">
+				<marker id="mArrow" markerWidth="5" markerHeight="8" refX="0" refY="4" orient="auto">
 					<path d="M 0 0 4 4 0 8" style="fill: none; stroke: black;"/>
 				</marker>
-				<marker id="mTriangle" markerWith="5" markerHeight="10" refX="5" refY="5" orient="auto">
+				<marker id="mTriangle" markerWidth="5" markerHeight="10" refX="5" refY="5" orient="auto">
 					<path d="M 0 0 5 5 0 10 Z" style="fill: black;"/>
 				</marker>
 			</defs>
 			<path d="M 10 20 100 20 A 20 30 0 0 1 120 50 L 120 110"
-				style="marker-start: url(#mCircle); marker-mid: url(#mArrow);marker-end: url(#mTriangle);fill: none;stroke: #000000;"/>
-		</svg>
-		<svg>
-			<path d="M 0 0 4 4 0 8" style="fill: none; stroke: black;"/>
+				style="marker-start: url(#mCircle); 
+					marker-mid: url(#mArrow);
+					marker-end: url(#mTriangle);fill: 
+					none;stroke: #000000; stroke-width: 1;"/>
 		</svg>
 		
 		<svg version="1.1" xmlns="http://www.w3.org/2000/svg">
 			<defs>
-				<marker id="ma" markerWith="5" markerHeight="8" refX="0" refY="4" orient="auto">
-					<path d="M 0 0 4 4 0 8" style="fill: none; stroke: #0000FF; stroke-width: 2;"/>
+				<marker id="mCircle1" markerWidth="10" markerHeight="10" refX="5" refY="5">
+					<circle cx="5" cy="5" r="4" style="fill: none; stroke: black;"/>
 				</marker>
 			</defs>
-			<rect x="0" y="0" width='100px' height="100px" style="fill: red;stroke: #0000FF; stroke-width: 20px;" />
+			<path d="M 10 20 H 100 A 20 30 0 0 1 120 50 L 120 110" 
+				style="fill: none; stroke: black; stroke-width: 2; marker-start: url(#mCircle1);"/>
 		</svg>
 		
-		
-		<svg style="width: 100px; height: 100px; ">
-			<rect x="0" y="0" width="80px" height="80px" style="fill: none;stroke: red; stroke-width: 10px;"/>
+		<svg xmlns="http://www.w3.org/2000/svg">
+			<defs>
+				<marker id="mc" markerWidth="10" markerHeight="10" refX="5" refY="5">
+					<circle cx="5" cy="5" r="4" style="fill: none; stroke: black;"/>
+				</marker>
+			</defs>
+			<path d="M 10 20 H 100 A 20 30 0 0 1 120 50 L 120 110" 
+				style="fill: none; stroke: black; stroke-width: 2; marker-start: url(#mc);"/>
 		</svg>
+		
+		<svg xmlns="http://www.w3.org/2000/svg">
+			<defs>
+				<marker id="mc" markerWidth="10" markerHeight="10" viewBox="-10 -10 10 10">
+					<circle cx="5" cy="5" r="4" style="fill: none; stroke: black;"/>
+				</marker>
+			</defs>
+			<path d="M 10 20 H 100 A 20 30 0 0 1 120 50 L 120 110" 
+				style="fill: none; stroke: black; stroke-width: 2; marker-start: url(#mc);"/>
+		</svg>
+		
 	</body>
 </html>
