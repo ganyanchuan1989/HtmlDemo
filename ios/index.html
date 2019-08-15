@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>iOS clean Test</title>
+    <style>
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
+      input[type='number'] {
+        -moz-appearance: textfield;
+        height: 30px;
+
+        /* line-height: 30px; */
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        position: relative;
+        width: 100%;
+        padding: 7px 40px 8px 5px;
+        box-sizing: border-box;
+      }
+      .inpput-container {
+        position: absolute;
+        display: inline;
+      }
+      img {
+        position: absolute;
+        right: 5px;
+        top: 6px;
+        width: 18px;
+        height: 18px;
+      }
+      body {
+        -webkit-touch-callout: none; /*系统默认菜单被禁用*/
+        -webkit-user-select: none; /*webkit浏览器*/
+        -khtml-user-select: none; /*早起浏览器*/
+        -moz-user-select: none; /*火狐浏览器*/
+        -ms-user-select: none; /*IE浏览器*/
+        user-select: none; /*用户是否能够选中文本*/
+      }
+    </style>
+    <script src="./jquery-2.1.0.js"></script>
+    <script>
+      $(function() {
+        $('#txt').on('touchstart', function(e) {
+            var rect = e.target.getBoundingClientRect();
+            var x = e.originalEvent.targetTouches[0].pageX - rect.left;
+            // var y = e.originalEvent.targetTouches[0].pageY - rect.top;
+            // console.log(x, y)
+          var ws = $('#txt').css('width');
+          var w = ws.substr(0, ws.length - 2);
+        //   var cX = e.originalEvent.changedTouches[0].clientX;
+          // 40 是清除按钮操作区域，可根据自己需要定制
+          // 注意和 input padding-right 要一样
+          console.log(w , x)
+          if (w - x < 40) {
+            $('#txt').val('');
+            e.preventDefault();
+          }
+        });
+        $('#imgClear').click(function() {
+          $('#txt1').val('');
+          $('#txt1').focus();
+        });
+      });
+
+      document.oncontextmenu = function(e) {
+        e.preventDefault();
+      };
+    </script>
+  </head>
+  <body style="padding: 15px">
+    <div>
+      优化前：
+      <div class="inpput-container">
+        <input id="txt1" type="number" />
+        <img id="imgClear" src="./close.png" />
+      </div>
+    </div>
+
+    <div style="margin-top: 20px">
+      优化后：
+      <div class="inpput-container">
+        <input id="txt" type="number" />
+        <img src="./close.png" style="pointer-events: none;" />
+      </div>
+    </div>
+  </body>
+</html>
