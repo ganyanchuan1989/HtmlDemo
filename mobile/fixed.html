@@ -102,14 +102,14 @@
         // var keyboardHeight = -1;
         window.keyboardHeight = 277;
         $(window).resize(function() {
-          console.log("resize", $(window).height());
+          // console.log("resize", $(window).height());
           window.cusKeyboardVisibility = true;
           if ($(window).height() == originHeight) {
             window.cusKeyboardVisibility = false; // hidden
           } else {
             window.cusKeyboardVisibility = true; // show
             window.keyboardHeight = originHeight - $(window).height();
-            // console.log("keyboardHeight", keyboardHeight);
+            console.log("keyboardHeight", window.keyboardHeight);
           }
 
           window.needJumpKeyboard = true;
@@ -120,7 +120,7 @@
           var iH = $(this).outerHeight(); // 当前input height
           var iTop = $(this).offset().top; // 当前input top
           var fH = 40; // fixed button height
-          var kH = window.keyboardHeight; // keyboard height
+          // var kH = window.keyboardHeight; // keyboard height
           // console.log($(this).outerHeight());
           // console.log($(this).offset().top);
           // console.log(iTop + iH > originHeight - (fH + kH));
@@ -132,7 +132,7 @@
             // console.log("noscroll");
             if (originHeight - keyboardHeight - (iTop + iH) < 40) {
               // fixed 容器的高度
-              console.log("scroll");
+              // console.log("scroll");
               $("html,body").animate({ scrollTop: 40 }, "slow");
               // console.log($("#txt2").offset().top);
               // $("#txt2").
@@ -159,14 +159,14 @@
           this is other content
         </div>
         <div style="height:200px; width:100%;">
-          <p>this is input :</p>
+          <p>this is input2 :</p>
           <input id="txt2" type="text" />
         </div>
         <div style="height:400px; width:100%;">
           this is content height 400px
         </div>
         <div style="height:200px; width:100%;">
-          <p>this is input too :</p>
+          <p>this is input3 :</p>
           <input id="txt3" type="text" />
         </div>
       </div>
