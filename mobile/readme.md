@@ -2,7 +2,7 @@
 
 ## 关于 fixed 分析
 
-`position:fixed; bottom:0;`的元素在唤起虚拟键盘的时候会被键盘顶到虚拟键盘的上边，其中原因是：android 在唤起虚拟键盘的时候，会讲 webview 的窗口的高度缩小（原来的高度-虚拟键盘的高度），所以`position:fixed; bottom:0;`的元素被顶上去的原因不是 css 兼容性问题，是 android 调整浏览器（webview）窗口问题。
+`position:fixed; bottom:0;`的元素在唤起虚拟键盘的时候会被键盘顶到虚拟键盘的上边，其中原因是：android 在唤起虚拟键盘的时候，会将 webview 的窗口的高度缩小（原来的高度-虚拟键盘的高度），所以`position:fixed; bottom:0;`的元素被顶上去的原因不是 css 兼容性问题，是 android 调整浏览器（webview）窗口问题。
 
 ## android webview 处理输入聚焦问题
 
