@@ -144,6 +144,11 @@
         var footerH = 40;
         $("#content").css("height", $(window).height() - navH - footerH);
       });
+
+      function xx() {
+        console.log("object");
+        window.scrollBy(0, -20);
+      }
     </script>
   </head>
   <body>
@@ -170,7 +175,7 @@
           <input id="txt3" type="text" />
         </div>
       </div>
-      <footer><input /><button>提交</button></footer>
+      <footer><input /><button onclick="xx()">提交</button></footer>
     </div>
   </body>
 </html>
