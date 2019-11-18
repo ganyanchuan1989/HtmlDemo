@@ -56,24 +56,6 @@
         width: 100%;
       }
     </style>
-    <script src="../js/jquery-2.1.0.js"></script>
-    <script src="./vconsole.min.js"></script>
-    <script>
-      // init vConsole
-      var vConsole = new VConsole();
-      console.log("Hello world1");
-    </script>
-    <script>
-      $(function() {
-        $(window).resize(function() {
-          console.log($(window).height());
-        });
-        // console.log($(window).height());
-        var navH = 40;
-        var footerH = 40;
-        $("#content").css("height", $(window).height() - navH - footerH);
-      });
-    </script>
   </head>
   <body>
     <div id="container">
