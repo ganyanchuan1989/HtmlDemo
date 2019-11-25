@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Print</title>
+    <style>
+      @media print {
+        body[data-pdfjsprinting] #outerContainer {
+          display: none;
+        }
+
+        body[data-pdfjsprinting] #printContainer {
+          display: block;
+        }
+      }
+      #printContainer {
+        display: none;
+      }
+      @supports ((size: A4) and (size: 1pt 1pt)) {
+        @page {
+          size: 612pt 792pt;
+        }
+      }
+    </style>
+    <script>
+      window.addEventListener("beforeprint", windowBeforePrint);
+
+      function windowBeforePrint() {
+        console.log("beforeprint");
+        var body = document.querySelector("body");
+        body.setAttribute("data-pdfjsprinting", true);
+      }
+      function myprint() {
+        window.print();
+      }
+    </script>
+  </head>
+  <body>
+    <div
+      id="outerContainer"
+      style="width: 500px;height: 300px;background: red;"
+    >
+      this is view content
+    </div>
+    <div
+      id="printContainer"
+      style="width: 500px;height: 300px;background: green;"
+    >
+      this is print content
+    </div>
+    <button onclick="myprint()">print</button>
+  </body>
+</html>

@@ -5,14 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
-    <script src="./js/jquery-2.1.0.js"></script>
     <script>
-      $(function() {
-        $.get("/1.html", function(data, status) {
-          console.log("Data: " + data + "\nStatus: " + status);
-        });
-      });
+      function aaa() {
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.save();
+        ctx.rotate((Math.PI / 180) * 30);
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "rgba(255,0,0, 0.2)";
+        ctx.fillText("HelloWorld", 100, 100);
+        ctx.restore();
+      }
     </script>
   </head>
-  <body></body>
+  <body>
+    <button onclick="aaa()">aaa</button>
+    <canvas
+      id="canvas"
+      width="500"
+      height="500"
+      style="background: #eee;"
+    ></canvas>
+  </body>
 </html>
