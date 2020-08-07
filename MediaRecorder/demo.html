@@ -1,0 +1,81 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="./js/jquery-1.8.3.js" type="text/javascript" ></script>
+<script src="./js/leadcomcore.js" type="text/javascript" ></script>
+<script src="./js/leadcomvideo.js" type="text/javascript" ></script>
+<script src="./js/leadcomphone.js" type="text/javascript" ></script>
+<script>
+var recordNo = ""; //录像流水号
+
+function setVideo(){			//设置视频设备
+	sp.setVideo(function(args){
+		println("["+args.result+"] ["+args.message+"]");
+	});
+}
+
+function startVideo(){			//开始录像
+	var filename = $("#filename").val();
+	sp.startVideo(filename,function(args){
+		recordNo = args.recordNo;
+		$("#serial").val(recordNo);
+		println("["+args.message+"] ["+args.recordNo+"]");
+	});
+}
+
+function stopVideo(){		//结束录像
+	var recordNo = $("#serial").val();
+	sp.stopVideo(function(args){
+		println("["+args.message+"] ["+recordNo+"]");
+	});
+}
+
+function playVideo(){			//播放视频
+	var recordNo = $("#serial").val();
+	sp.playVideo(recordNo,function(args){
+		println("["+args.message+"] ["+recordNo+"]");
+	});
+}
+
+function deleteVideo(){			//删除视频
+	var recordNo = $("#serial").val();
+	sp.deleteVideo(recordNo,function(args){
+		println("["+args.message+"] ["+recordNo+"]");
+	});
+}
+
+function println(text){
+	$("#console")[0].value = text+"\r\n" + $("#console")[0].value;
+}
+
+var sp = leadcom.video.create();
+
+</script>
+</head>
+<body>
+<table style="width:800px;" border="0" colspan="0" rowspan="0" >
+	<tr>
+		<td height="25" align="right" style="color:#0066CC">文件名称：</td>
+	  	<td align="left">
+	    	<input id="filename" name="filename" type="text" class="" placeholder="文件名称" style="width:200px"></td>
+	</tr>
+	<tr>
+		<td height="25" align="right" style="color:#0066CC">录像序号：</td>
+		<td align="left">
+			<input id="serial" name="serial" type="text" class="" placeholder="录像序号" style="width:200px"></td>
+	</tr>
+</table>
+<br />
+<table style="width:800px;" border="0" colspan="0" rowspan="0" >
+	<tr>
+		<td><INPUT TYPE="button" value="设置视频设备" onClick="setVideo()"></td>
+        <td><INPUT TYPE="button" value="开始录像" onClick="startVideo()"></td>
+        <td><INPUT TYPE="button" value="结束录像" onClick="stopVideo()"></td>
+        <td><INPUT TYPE="button" value="播放视频" onClick="playVideo()"></td>
+		<td><INPUT TYPE="button" value="删除视频" onClick="deleteVideo()"></td>
+	</tr>
+</table>
+<textarea name="console" rows="20" id="console" style="width:900px">
+</textarea>
+</body>
+</html>

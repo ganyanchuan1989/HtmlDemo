@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediaRecorder Test</title>
+    <style>
+      .video-container {
+        display: flex;
+      }
+
+      video {
+        width: 640px;
+        height: 480px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>MediaRecorder Test</h1>
+    <div>
+      <input id="filename" value="html5test.mp4" />
+      <button id="btnStart" onclick="startRecorder()">开始</button>
+      <button id="btnEnd" onclick="endRecorder()">结束</button>
+      <input type="checkbox" id="ckSave" checked /> 是否保存
+      <!-- <button id="btnPreview">播放预览(内存)</button> -->
+    </div>
+    <div class="video-container">
+      <div>
+        <h1>采集时预览</h1>
+        <video id="capvideo" autoplay></video>
+      </div>
+      <div>
+        <h1>采集后预览</h1>
+        <video id="prevideo" controls></video>
+      </div>
+    </div>
+    <script>
+      console.log(
+        MediaRecorder.isTypeSupported("video/webm;codecs=h264"),
+        MediaRecorder.isTypeSupported("video/webm;codecs=avc1"),
+        MediaRecorder.isTypeSupported("video/x-matroska;codecs=h264"),
+        MediaRecorder.isTypeSupported("video/x-matroska;codecs=h264"),
+        MediaRecorder.isTypeSupported("video/mp4;codecs=h264")
+      );
+      
+      if (
+        navigator.mediaDevices === undefined ||
+        navigator.mediaDevices.getUserMedia === undefined
+      ) {
+        navigator.mediaDevices = {};
+        navigator.mediaDevices.getUserMedia = function (constraintObj) {
+          let getUserMedia =
+            navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+          if (!getUserMedia) {
+            return Promise.reject(
+              new Error("getUserMedia is not implemented in this browser")
+            );
+          }
+          return new Promise(function (resolve, reject) {
+            getUserMedia.call(navigator, constraintObj, resolve, reject);
+          });
+        };
+      } else {
+        navigator.mediaDevices
+          .enumerateDevices()
+          .then((devices) => {
+            devices.forEach((device) => {
+              console.log(device.kind.toUpperCase(), device.label);
+              //, device.deviceId
+            });
+          })
+          .catch((err) => {
+            console.log(err.name, err.message);
+          });
+      }
+
+      var mediaRecorder = null;
+
+      function startRecorder() {
+        let constraintObj = {
+          audio: true, // 音频
+          video: {
+            // 视频
+            width: 640,
+            height: 480,
+          },
+
+          // width: { min: 640, ideal: 1280, max: 1920 },
+          // height: { min: 480, ideal: 720, max: 1080 }
+        };
+        navigator.mediaDevices
+          .getUserMedia(constraintObj)
+          .then(function (mediaStreamObj) {
+            console.log(mediaStreamObj);
+            //connect the media stream to the first video element
+            let video = document.getElementById("capvideo");
+            if ("srcObject" in video) {
+              video.srcObject = mediaStreamObj;
+            } else {
+              //old version
+              video.src = window.URL.createObjectURL(mediaStreamObj);
+            }
+
+            video.onloadedmetadata = function (ev) {
+              //show in the video element what is being captured by the webcam
+              video.play();
+            };
+
+            let chunks = []; //
+            //add listeners for saving video/audio
+            var options = { mimeType: "video/webm;codecs=vp8,opus" };
+            mediaRecorder = new MediaRecorder(mediaStreamObj, options);
+            mediaRecorder.start();
+            console.log(mediaRecorder.state);
+            mediaRecorder.onstart = function () {
+              console.log("onstart", mediaRecorder.state);
+            };
+            mediaRecorder.ondataavailable = function (ev) {
+              // mediaRecorder.requestData();
+              chunks.push(ev.data);
+              console.log("ev", ev);
+            };
+            mediaRecorder.onstop = (ev) => {
+              let blob = new Blob(chunks, { type: "video/mp4;" });
+              chunks = [];
+              let videoURL = window.URL.createObjectURL(blob);
+              document.getElementById("prevideo").src = videoURL;
+              // vidSave.src = videoURL;
+
+              if (document.getElementById("ckSave").checked) {
+                const a = document.createElement("a");
+                a.download = document.getElementById("filename").value;
+                a.href = videoURL;
+                a.click();
+              }
+            };
+            //   setInterval(()=>{
+            //     mediaRecorder.requestData();
+            //   }, 1000)
+          })
+          .catch(function (err) {
+            console.log(err.name, err.message);
+          });
+      }
+
+      function endRecorder() {
+        mediaRecorder.stop();
+        console.log(mediaRecorder.state);
+      }
+    </script>
+  </body>
+</html>
