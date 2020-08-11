@@ -19,7 +19,7 @@
   <body>
     <h1>MediaRecorder Test</h1>
     <div>
-      <input id="filename" value="html5test.mp4" />
+      <input id="filename" value="ceftest.mp4" />
       <button id="btnStart" onclick="startRecorder()">开始</button>
       <button id="btnEnd" onclick="endRecorder()">结束</button>
       <input type="checkbox" id="ckSave" checked /> 是否保存
@@ -36,6 +36,24 @@
       </div>
     </div>
     <script>
+      
+      var ws = new WebSocket("ws://127.0.0.1:8181");
+      ws.binaryType = 'arraybuffer';
+      ws.onopen = function () {
+
+        console.log("链接已经打开");
+      };
+
+      ws.onmessage = function (evt) {
+        var received_msg = evt.data;
+        console.log("数据已接收...");
+      };
+
+      ws.onclose = function () {
+        // 关闭 websocket
+        console.log("连接已关闭...");
+      };
+
       console.log(
         MediaRecorder.isTypeSupported("video/webm;codecs=h264"),
         MediaRecorder.isTypeSupported("video/webm;codecs=avc1"),
@@ -65,7 +83,7 @@
           });
         })
         .catch((err) => {
-          console.log(err.name, err.message);
+          console.log(err, err.name, err.message);
         });
 
       var mediaRecorder = null;
@@ -102,7 +120,7 @@
 
             let chunks = []; //
             //add listeners for saving video/audio
-            var options = { mimeType: "video/mp4; codecs=H264" };
+            var options = { mimeType: "video/webm;codecs=vp8,opus" };
             mediaRecorder = new MediaRecorder(mediaStreamObj);
             mediaRecorder.start();
             console.log(mediaRecorder.state);
@@ -112,7 +130,7 @@
             mediaRecorder.ondataavailable = function (ev) {
               // mediaRecorder.requestData();
               chunks.push(ev.data);
-              console.log("ev", ev);
+              // console.log("ev", ev);
             };
             mediaRecorder.onstop = (ev) => {
               let blob = new Blob(chunks, { type: "video/mp4;" });
@@ -122,10 +140,11 @@
               // vidSave.src = videoURL;
 
               if (document.getElementById("ckSave").checked) {
-                const a = document.createElement("a");
-                a.download = document.getElementById("filename").value;
-                a.href = videoURL;
-                a.click();
+                // const a = document.createElement("a");
+                // a.download = document.getElementById("filename").value;
+                // a.href = videoURL;
+                // a.click();
+                saveBlob(blob);
               }
             };
             //   setInterval(()=>{
@@ -140,6 +159,25 @@
       function endRecorder() {
         mediaRecorder.stop();
         console.log(mediaRecorder.state);
+      }
+
+      function saveBlob(blob) {
+        console.log(blob)
+        let reader = new FileReader();
+        reader.onload = function () {
+          if (reader.readyState == 2) {
+            console.log("reader.result", reader.result);
+            ws.send(reader.result);
+            // window.jsBridge.saveVideo("c:/cef.mp4", reader.result, function (
+            //   path
+            // ) {
+            //   console.log("save success", path);
+            // });
+          }
+        };
+        reader.readAsArrayBuffer(blob);
+        
+        // ws.send(blob);
       }
     </script>
   </body>

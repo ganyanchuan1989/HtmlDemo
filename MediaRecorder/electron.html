@@ -36,14 +36,32 @@
       </div>
     </div>
     <script>
-      console.log(
-        MediaRecorder.isTypeSupported("video/webm;codecs=h264"),
-        MediaRecorder.isTypeSupported("video/webm;codecs=avc1"),
-        MediaRecorder.isTypeSupported("video/x-matroska;codecs=h264"),
-        MediaRecorder.isTypeSupported("video/x-matroska;codecs=h264"),
-        MediaRecorder.isTypeSupported("video/mp4;codecs=h264")
-      );
+      const SAVE_FILE = "saving";
+      const SAVED_FILE = "saved";
+      var { ipcRenderer } = require("electron");
+      ipcRenderer.on(SAVED_FILE, (event, path) => {
+        console.log("Saved file " + path);
+      });
 
+      // const fileName = "c:/123.mp4"
+      function saveBlob(blob) {
+        let reader = new FileReader();
+        reader.onload = function () {
+          if (reader.readyState == 2) {
+            console.log("reader.result", reader.result);
+            // var buffer = new Buffer(reader.result)
+            ipcRenderer.send(
+              SAVE_FILE,
+              "c:/123.mp4",
+              new Uint8Array(reader.result)
+            );
+            // console.log(`Saving ${JSON.stringify({ fileName, size: blob.size })}`)
+          }
+        };
+        reader.readAsArrayBuffer(blob);
+      }
+    </script>
+    <script>
       if (
         navigator.mediaDevices === undefined ||
         navigator.mediaDevices.getUserMedia === undefined
@@ -76,7 +94,7 @@
       }
 
       var mediaRecorder = null;
-      var mediaStreamObj = null;
+
       function startRecorder() {
         let constraintObj = {
           audio: true, // 音频
@@ -91,8 +109,8 @@
         };
         navigator.mediaDevices
           .getUserMedia(constraintObj)
-          .then(function (stream) {
-            mediaStreamObj = stream;
+          .then(function (mediaStreamObj) {
+            console.log(mediaStreamObj);
             //connect the media stream to the first video element
             let video = document.getElementById("capvideo");
             if ("srcObject" in video) {
@@ -109,7 +127,7 @@
 
             let chunks = []; //
             //add listeners for saving video/audio
-            var options = { mimeType: "video/webm;codecs=vp8,opus" };
+            var options = { mimeType: "video/webm;codecs=vp8,opus"  };
             mediaRecorder = new MediaRecorder(mediaStreamObj, options);
             mediaRecorder.start();
             console.log(mediaRecorder.state);
@@ -133,6 +151,8 @@
                 // a.download = document.getElementById("filename").value;
                 // a.href = videoURL;
                 // a.click();
+
+                saveBlob(blob);
               }
             };
             //   setInterval(()=>{
@@ -145,15 +165,7 @@
       }
 
       function endRecorder() {
-        try {
-          mediaStreamObj.getTracks().forEach(function(track) {
-            track.stop();
-          });
-          // MediaStreamTrack.stop()
-          // mediaRecorder.stop();
-        } catch (err) {
-          console.log(err)
-        }
+        mediaRecorder.stop();
         console.log(mediaRecorder.state);
       }
     </script>
