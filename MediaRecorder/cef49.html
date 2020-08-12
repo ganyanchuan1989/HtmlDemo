@@ -3,63 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MediaRecorder Test</title>
-    <style>
-      .video-container {
-        display: flex;
-      }
-
-      video {
-        width: 640px;
-        height: 480px;
-      }
-    </style>
+    <title>CEF49 + H5 视频采集测试</title>
+    <link rel="stylesheet" href="./style.css" />
   </head>
 
   <body>
-    <h1>MediaRecorder Test</h1>
-    <div>
-      <input id="filename" value="ceftest.mp4" />
-      <button id="btnStart" onclick="startRecorder()">开始</button>
-      <button id="btnEnd" onclick="endRecorder()">结束</button>
-      <input type="checkbox" id="ckSave" checked /> 是否保存
-      <!-- <button id="btnPreview">播放预览(内存)</button> -->
-    </div>
-    <div class="video-container">
-      <div>
-        <h1>采集时预览</h1>
-        <video id="capvideo" autoplay></video>
-      </div>
-      <div>
-        <h1>采集后预览</h1>
-        <video id="prevideo" controls></video>
+    <div class="container">
+      <h1>CEF49 + H5 视频采集</h1>
+      <div class="content">
+        <div style="margin-right: 20px;">
+          <div>
+            <p>
+              <span>文件名：</span
+              ><input id="filename" value="c:/cef49test.webm" />
+            </p>
+            <p><span>视频宽度：</span><input id="vw" value="640" /></p>
+            <p><span>视频高度：</span><input id="vh" value="480" /></p>
+            <p><span>音频比特率：</span><input id="abr" value="128000" /></p>
+            <p><span>视频比特率：</span><input id="vbr" value="2500000" /></p>
+            <p><span>帧率：</span><input id="fps" value="30" /></p>
+            <button id="btnStart" onclick="startRecorder()">开始</button>
+            <button id="btnEnd" onclick="endRecorder()">结束</button>
+            <button id="btnReplay" onclick="replayVideo()">回放</button>
+          </div>
+        </div>
+        <div style="position: relative;">
+          <video id="video" autoplay style="position: absolute;"></video>
+          <video
+            id="preview"
+            autoplay
+            controls
+            style="position: absolute; display: none;"
+          ></video>
+        </div>
       </div>
     </div>
     <script>
-      
-      var ws = new WebSocket("ws://127.0.0.1:8181");
-      ws.binaryType = 'arraybuffer';
-      ws.onopen = function () {
-
-        console.log("链接已经打开");
-      };
-
-      ws.onmessage = function (evt) {
-        var received_msg = evt.data;
-        console.log("数据已接收...");
-      };
-
-      ws.onclose = function () {
-        // 关闭 websocket
-        console.log("连接已关闭...");
-      };
-
       console.log(
         MediaRecorder.isTypeSupported("video/webm;codecs=h264"),
         MediaRecorder.isTypeSupported("video/webm;codecs=avc1"),
+        MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus"),
         MediaRecorder.isTypeSupported("video/x-matroska;codecs=h264"),
-        MediaRecorder.isTypeSupported("video/x-matroska;codecs=h264")
+        MediaRecorder.isTypeSupported("video/x-matroska;codecs=avc1"),
+        MediaRecorder.isTypeSupported("video/mp4;codecs=h264")
       );
+
+      var ws = new WebSocket("ws://127.0.0.1:8181");
+      ws.binaryType = "arraybuffer";
+      ws.onopen = function () {
+        console.log("链接打开");
+      };
+      ws.onmessage = function (evt) {
+        console.log("数据已接收", evt.data);
+      };
+      ws.onclose = function () {
+        console.log("连接已关闭");
+      };
 
       navigator.mediaDevices.getUserMedia = function (constraintObj) {
         let getUserMedia =
@@ -83,47 +82,68 @@
           });
         })
         .catch((err) => {
-          console.log(err, err.name, err.message);
+          console.log(err.name, err.message);
         });
 
       var mediaRecorder = null;
+      var mediaStream = null;
+      var chunks = [];
+      var video = document.getElementById("video");
+      var preview = document.getElementById("preview");
 
       function startRecorder() {
+        var filename = document.getElementById("filename").value;
+        var vw = document.getElementById("vw").value;
+        var vh = document.getElementById("vh").value;
+        var abr = document.getElementById("abr").value;
+        var vbr = document.getElementById("vbr").value;
+        var fps = document.getElementById("fps").value;
+        video.style.display = "";
+        preview.style.display = "none";
+
+        // 发送文件名
+        ws.send(filename);
+
         let constraintObj = {
           audio: true, // 音频
           video: {
             // 视频
-            width: 640,
-            height: 480,
+            width: vw,
+            height: vh,
           },
-
-          // width: { min: 640, ideal: 1280, max: 1920 },
-          // height: { min: 480, ideal: 720, max: 1080 }
         };
         navigator.mediaDevices
           .getUserMedia(constraintObj)
-          .then(function (mediaStreamObj) {
-            console.log(mediaStreamObj);
-            //connect the media stream to the first video element
-            let video = document.getElementById("capvideo");
+          .then(function (stream) {
+            mediaStream = stream;
+            console.log("mediaStream", mediaStream);
+            mediaStream.getTracks().forEach(function (track) {
+              // track.stop();
+              // console.log("track", track, track.getSettings());
+              if (track.kind === "video") {
+                track.frameRate = fps;
+                console.log('set fps', fps, track.frameRate)
+              }
+            });
+            
+            
             if ("srcObject" in video) {
-              video.srcObject = mediaStreamObj;
+              video.srcObject = mediaStream;
             } else {
-              //old version
-              video.src = window.URL.createObjectURL(mediaStreamObj);
+              video.src = window.URL.createObjectURL(mediaStream);
             }
-
             video.onloadedmetadata = function (ev) {
-              //show in the video element what is being captured by the webcam
               video.play();
             };
 
-            let chunks = []; //
             //add listeners for saving video/audio
-            var options = { mimeType: "video/webm;codecs=vp8,opus" };
-            mediaRecorder = new MediaRecorder(mediaStreamObj);
+            var options = {
+              audioBitsPerSecond: abr,
+              videoBitsPerSecond: vbr,
+              mimeType: "video/webm;codecs=vp8,opus",
+            };
+            mediaRecorder = new MediaRecorder(mediaStream, options);
             mediaRecorder.start();
-            console.log(mediaRecorder.state);
             mediaRecorder.onstart = function () {
               console.log("onstart", mediaRecorder.state);
             };
@@ -133,23 +153,15 @@
               // console.log("ev", ev);
             };
             mediaRecorder.onstop = (ev) => {
-              let blob = new Blob(chunks, { type: "video/mp4;" });
-              chunks = [];
-              let videoURL = window.URL.createObjectURL(blob);
-              document.getElementById("prevideo").src = videoURL;
-              // vidSave.src = videoURL;
-
-              if (document.getElementById("ckSave").checked) {
-                // const a = document.createElement("a");
-                // a.download = document.getElementById("filename").value;
-                // a.href = videoURL;
-                // a.click();
-                saveBlob(blob);
-              }
+              console.log('onstop', mediaRecorder.state);
+              let blob = new Blob(chunks, { type: "video/webm;codecs=vp8,opus" });
+              // let videoURL = window.URL.createObjectURL(blob);
+              // const a = document.createElement("a");
+              // a.download = filename;
+              // a.href = videoURL;
+              // a.click();
+              saveBlob(blob);
             };
-            //   setInterval(()=>{
-            //     mediaRecorder.requestData();
-            //   }, 1000)
           })
           .catch(function (err) {
             console.log(err.name, err.message);
@@ -157,28 +169,33 @@
       }
 
       function endRecorder() {
-        mediaRecorder.stop();
+        try {
+          mediaStream.getTracks().forEach(function (track) {
+            track.stop();
+          });
+          mediaRecorder.stop();
+
+          video.style.display = "none";
+          preview.style.display = "none";
+        } catch (err) {
+          console.log(err);
+        }
         console.log(mediaRecorder.state);
       }
 
-      function saveBlob(blob) {
-        console.log(blob)
-        let reader = new FileReader();
-        reader.onload = function () {
-          if (reader.readyState == 2) {
-            console.log("reader.result", reader.result);
-            ws.send(reader.result);
-            // window.jsBridge.saveVideo("c:/cef.mp4", reader.result, function (
-            //   path
-            // ) {
-            //   console.log("save success", path);
-            // });
-          }
-        };
-        reader.readAsArrayBuffer(blob);
-        
-        // ws.send(blob);
+      function replayVideo() {
+        let blob = new Blob(chunks, { type: "video/webm;" });
+        let videoURL = window.URL.createObjectURL(blob);
+        preview.style.display = "";
+        preview.src = videoURL;
+        // video.controls = true;
+        // video.autoplay = true;
       }
+
+      function saveBlob(blob) {
+        ws.send(blob);
+      }
+      
     </script>
   </body>
 </html>
