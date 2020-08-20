@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>axios cookie</title>
+</head>
+<script type="text/javascript" src="./axios.min.js"></script>
+<script type="text/javascript">
+	
+	
+	function commit(){
+		var name = document.getElementById('name').value;
+		var pwd = document.getElementById('pwd').value;
+		
+		const params = new URLSearchParams();
+		params.append('name', name);
+		params.append('pwd', pwd);
+		
+		axios.post('/electron-auth-prj/AuthServlet',params).then(function(res){
+			console.log("res", res);
+			if(res.data == "ok") {
+				// alert('登录成功');
+				axios.post('/electron-auth-prj/UserServlet',params).then(function(res){
+					console.log("res", res);
+				});
+			} else {
+				alert('登录失败')
+			}
+		});
+	}
+</script>
+</head>
+<body>
+	<div>
+		<h1>登录页面</h1>
+		用户名：<input id="name" name="name"/><br>
+		密码：<input id="pwd" name="pwd" type="password"/><br>
+		<button onclick="commit()">提交</button>
+	</div>
+</body>
+</html>

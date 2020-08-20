@@ -9,7 +9,13 @@
 
   <body>
     <div class="container">
-      <h1>CEF49 + H5 视频采集</h1>
+      <div>
+        <h1>CEF49 + H5 视频采集</h1>
+        <p
+          id="txtTime"
+          style="text-align: center; height: 30px; line-height: 30px;"
+        ></p>
+      </div>
       <div class="content">
         <div style="margin-right: 20px;">
           <div>
@@ -25,10 +31,12 @@
             <button id="btnStart" onclick="startRecorder()">开始</button>
             <button id="btnEnd" onclick="endRecorder()">结束</button>
             <button id="btnReplay" onclick="replayVideo()">回放</button>
+            <button onclick="testBlob()">testBlob</button>
+            <button onclick="testBlob2()">testBlob2</button>
           </div>
         </div>
         <div style="position: relative;">
-          <video id="video" autoplay style="position: absolute;"></video>
+          <video id="video" autoplay style="position: absolute;" muted></video>
           <video
             id="preview"
             autoplay
@@ -39,6 +47,10 @@
       </div>
     </div>
     <script>
+      // 注入跨域访问权限
+      let ret = window.jsBridge.addCORSWhiteList("http://localhost:5501/");
+      console.log("AddCORSWhiteList", ret);
+
       console.log(
         MediaRecorder.isTypeSupported("video/webm;codecs=h264"),
         MediaRecorder.isTypeSupported("video/webm;codecs=avc1"),
@@ -47,18 +59,6 @@
         MediaRecorder.isTypeSupported("video/x-matroska;codecs=avc1"),
         MediaRecorder.isTypeSupported("video/mp4;codecs=h264")
       );
-
-      var ws = new WebSocket("ws://127.0.0.1:8181");
-      ws.binaryType = "arraybuffer";
-      ws.onopen = function () {
-        console.log("链接打开");
-      };
-      ws.onmessage = function (evt) {
-        console.log("数据已接收", evt.data);
-      };
-      ws.onclose = function () {
-        console.log("连接已关闭");
-      };
 
       navigator.mediaDevices.getUserMedia = function (constraintObj) {
         let getUserMedia =
@@ -90,6 +90,7 @@
       var chunks = [];
       var video = document.getElementById("video");
       var preview = document.getElementById("preview");
+      var time = 0;
 
       function startRecorder() {
         var filename = document.getElementById("filename").value;
@@ -100,9 +101,6 @@
         var fps = document.getElementById("fps").value;
         video.style.display = "";
         preview.style.display = "none";
-
-        // 发送文件名
-        ws.send(filename);
 
         let constraintObj = {
           audio: true, // 音频
@@ -117,16 +115,22 @@
           .then(function (stream) {
             mediaStream = stream;
             console.log("mediaStream", mediaStream);
+
+            setInterval(() => {
+              time++;
+              console.log(">>>>>>");
+              document.getElementById("txtTime").innerText = `${time}秒`;
+            }, 1000);
+
             mediaStream.getTracks().forEach(function (track) {
               // track.stop();
               // console.log("track", track, track.getSettings());
               if (track.kind === "video") {
                 track.frameRate = fps;
-                console.log('set fps', fps, track.frameRate)
+                console.log("set fps", fps, track.frameRate);
               }
             });
-            
-            
+
             if ("srcObject" in video) {
               video.srcObject = mediaStream;
             } else {
@@ -153,13 +157,16 @@
               // console.log("ev", ev);
             };
             mediaRecorder.onstop = (ev) => {
-              console.log('onstop', mediaRecorder.state);
-              let blob = new Blob(chunks, { type: "video/webm;codecs=vp8,opus" });
+              console.log("onstop", mediaRecorder.state);
+              let blob = new Blob(chunks, {
+                type: "video/webm;codecs=vp8,opus",
+              });
               // let videoURL = window.URL.createObjectURL(blob);
               // const a = document.createElement("a");
               // a.download = filename;
               // a.href = videoURL;
               // a.click();
+              console.log("blob", blob);
               saveBlob(blob);
             };
           })
@@ -184,7 +191,7 @@
       }
 
       function replayVideo() {
-        let blob = new Blob(chunks, { type: "video/webm;" });
+        let blob = new Blob(chunks, { type: "video/webm;codecs=vp8,opus" });
         let videoURL = window.URL.createObjectURL(blob);
         preview.style.display = "";
         preview.src = videoURL;
@@ -193,9 +200,27 @@
       }
 
       function saveBlob(blob) {
-        ws.send(blob);
+        let reader = new FileReader();
+        reader.onload = function () {
+          if (reader.readyState == 2) {
+            console.log("reader.result", reader.result);
+            var filename = document.getElementById("filename").value;
+            var url = "http://cefbianry/saveVideo";
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("FilePath", filename);
+            xhr.send(new Uint8Array(reader.result));
+            xhr.onload = function () {
+              console.log(xhr.responseText);
+            };
+
+            xhr.onerror = function (e) {
+              console.log(e);
+            };
+          }
+        };
+        reader.readAsArrayBuffer(blob);
       }
-      
     </script>
   </body>
 </html>
