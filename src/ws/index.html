@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket</title>
+    <script>
+      var ws = new WebSocket("ws://127.0.0.1:8181");
+
+      ws.onopen = function () {
+        // Web Socket 已连接上，使用 send() 方法发送数据
+        // ws.send("qqqqqqq");
+        
+        console.log("数据发送中...");
+      };
+
+      ws.onmessage = function (evt) {
+        var received_msg = evt.data;
+        console.log("数据已接收...");
+      };
+
+      ws.onclose = function () {
+        // 关闭 websocket
+        console.log("连接已关闭...");
+      };
+    </script>
+  </head>
+  <body>
+    <button>aaa</button>
+  </body>
+</html>

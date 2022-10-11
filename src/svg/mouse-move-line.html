@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		
+		<script src="../js/jquery-2.1.0.js"></script>
+		<script type="text/javascript">
+			var isdown = false;
+			$(function(){
+				$(window).mousemove(function(e){
+					console.log(111)
+				})
+				
+				$(window).mousedown(function(e){
+					isdown = true;
+				})
+				
+				$(window).mouseup(function(e){
+					isdown = false;
+				})
+			})
+		</script>
+	</head>
+	<body>
+		<svg style="width: 100px; height: 100px;">
+			<rect x="0" y="0" width="80px" height="80px" style="fill: red;stroke: #000000;"/>
+		</svg>
+	</body>
+</html>

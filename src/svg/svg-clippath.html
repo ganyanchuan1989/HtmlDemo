@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			.clip-path {
+				-webkit-clip-path: inset(10% round 10% 50% 10% 50%);
+				clip-path: inset(10% round 10% 50% 10% 50%);
+			}
+			
+			.clip-me {
+				/* 剪裁路径来自内联SVG <clipPath>元素 */
+				/*clip-path: url(#c1);*/
+				/* 路径来自外部SVG */
+				/*clip-path: url(path.svg#c1);*/
+				/* 多边形 */
+				-webkit-clip-path: polygon(5% 5%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%);
+				/* 圆 */
+				/*clip-path: circle(30px at 35px 35px);*/
+				/*椭圆*/
+				/*-webkit-clip-path: ellipse(65px 30px at 125px 40px);*/
+			}
+			
+			.clip-path-animation {
+				transition: 0.4s cubic-bezier(1, -1, 0, 2);
+				-webkit-clip-path: circle(180px at 128px 95px);
+				clip-path: circle(180px at 128px 95px);
+			}
+			
+			.clip-path-animation:hover {
+				-webkit-clip-path: circle(95px at 128px 95px);
+				clip-path: circle(95px at 128px 95px);
+			}
+		</style>
+	</head>
+
+	<body>
+		<svg width="325px" height="325px" version="1.1" xmlns="http://www.w3.org/2000/svg">
+			<defs>
+				<!-- 定义 -->
+				<clipPath id="clipPath">
+					<!-- 定义剪裁路径 -->
+					<rect x="0" y="0" width="80" height="80" />
+					<!-- 路径详细 -->
+				</clipPath>
+			</defs>
+			<circle cx="60" cy="60" r="50" fill="#34538b" clip-path="url(#clipPath)" stroke-dasharray="10,20,30,40" stroke="red"/>
+		</svg>
+		<svg>
+			<defs>
+				<clipPath id="clipPath">
+					<text x="10" y="50" style="font-size: 20px;">一步之遥</text>
+				</clipPath>
+			</defs>
+			<g style="clip-path: url(#clipPath);">
+				<circle cx="60" cy="60" r="50" fill="#34538b" />
+				<rect x="0" y="0" width="60" height="90" style="fill:#cd0000;" />
+			</g>
+		</svg>
+
+		<div class="clip-path">
+			<img src="../img/2.png" />
+		</div>
+		<div class="clip-me">
+			<img src="../img/2.png" />
+		</div>
+		<div class="clip-path-animation">
+			<img src="../img/2.png" />
+		</div>
+	</body>
+
+</html>
