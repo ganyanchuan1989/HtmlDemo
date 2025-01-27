@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>微软原生输入法中文模式异常</title>
+
+  <style>
+    input {
+      height: 25px;
+      line-height: 25px;
+      padding: e 8px;
+    }
+
+    .item {
+      background-color: #eee;
+      border: 1px dashed #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      padding: 20px;
+      margin: 10px 0;
+    }
+
+    .item h2 {
+      font-size: 18px;
+      margin: 4px 0;
+    }
+
+    .item p {
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="item">
+    <h2>问题1:事件阻止不生效</h2>
+    <p>
+      在keydow事件中通过 event.preventDefault();阻止事件默认行为不生效。<br />
+      <span style="color: red">也会影响限制输入功能，比如只允许输入数字</span>
+    </p>
+    <input onkeydown="handleKeyDown1(event)" oninput="handleInput1(event)" />
+  </div>
+  <div class="item">
+    <h2>问题2:input事件派发两次</h2>
+    <input oninput="handleInput2(event)" />
+  </div>
+  <div class="item">
+    <h2>问题3:在input事件中event.target.value 赋值，会多出一位</h2>
+    <p>比如下面例子，当输入长度超过5，会赋值"23"， 但是实际结果是：23 +最后一次按键值。<br /></p>
+    <input oninput="handleInput3(event)" />
+  </div>
+  <div class="item">
+    <h2>问题4:在keydown事件中event.target.value 赋值，会重复赋值</h2>
+    <p>
+      在keydonw中通过event.target.value赋值，会出现重复赋值。<br />
+      本质原因也是:event.preventDefault();不生效。
+    </p>
+    <input onkeydown="handleKeyDown4(event)" />
+  </div>
+  <div class="item">
+    <h2>问题5:keyCode 值异常</h2>
+    <p>1.数字，英文字母，数字键盘"*"按键，keyCode始终是:229<br /></p>
+    <input onkeydown="handleKeyDown5(event)" />
+  </div>
+  <div class="item">
+    <h2>问题6:不触发keypress事件</h2>
+    <input onkeypress="handleKeyPress6(event)" />
+  </div>
+</body>
+<script>
+  /*======问题1======*/
+  function handleKeyDown1(event) {
+    console.log(">>>QA1 keydown event", event);
+    event.preventDefault();
+  }
+
+  function handleInput1(event) {
+    console.log(">>>0A1 input event");
+  }
+
+  /*======问题2======*/
+  function handleInput2(event) {
+    console.log(">>>QA2 input event", event);
+  }
+
+  /*======问题3======*/
+  function handleInput3(event) {
+    if ((event.target.value.length === 5)) {
+      event.target.value = "23";
+    }
+  }
+
+  /*======问题4======*/
+  function handleKeyDown4(event) {
+    const { keyCode, code } = event;
+    const isNumpadNum = keyCode >= 96 && keyCode <= 105; // 小键盘
+    const isNum = keyCode >= 48 && keyCode <= 57; // 小键盘
+    const isMinus = keyCode === 189;
+    const isNumpadSubtract = keyCode === 109;
+    if (!(isNumpadNum || isNum || isMinus || isNumpadSubtract || keyCode === 229)) {
+      //如果输入的不是数字和”-“字符，直接返回
+      return;
+    }
+
+    // 获取实际按键的值
+    let inputValue = "";
+    // 解决信创电脑原生输入法中文模式下无法输入问题
+    if (keyCode === 229) {
+      if (code.indexof('Digit') >= 0) {
+        // 数值键盘
+        inputValue = code.replace('Digit', '');
+      } else if (code.indexof('Numpad') >= 0 && !isNaN(parseInt(code.substring(6), 10))) {
+        // 小键盘 数值键盘
+        inputValue = code.replace('Numpad', '');
+      } else if (code === 'Minus' || code === 'NumpadSubtract') {
+        inputValue = '-';
+      }
+    } else {
+      if (isNumpadNum || isNum) {
+        // 输入的是数值
+        inputValue = event.key; // String.fromcharcode(event.keyCode);
+      } else if (isMinus || isNumpadSubtract) {
+        // 输入的是横杠
+        inputValue = '-';
+      }
+    }
+    console.log(">>>0A4 event,target,value:" + event.target.value, ", inputValue:" + inputValue);
+    event.target.value = event.target.value + inputValue;
+    console.log(">>>QA4 event,target,value:" + event.target.value);
+    event.preventDefault();
+  }
+
+  /*======问题5======*/
+  function handleKeyDown5(event) {
+    console.log(">>>QA5 keyCode", event.keyCode, event);
+  }
+
+  /*======问题6======*/
+  function handleKeyPress6(event){
+    console.log('>>>QA6 keypress', event)
+  }
+</script>
+
+</html>

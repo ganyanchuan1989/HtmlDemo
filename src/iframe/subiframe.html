@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+iframe page
+<input type="button" value="父窗口赋值" onclick="assignment()" >
+<script>
+    //创建一个大对象
+    var a = new Array(1024*1024*100).join('0').split('');
+    function assignment(){
+        //将iframe中的变量赋值给父窗口变量
+        const obj = {name:"test"};//变量为json对象时不释放内存
+        //const str = "test";//变量为字符串或者其他常量，会释放内存
+        /* const fun = function(){
+            console.log("test");//变量为函数时不会释放内存
+        } */
+        //const obj2 = new Array();//变量为对象不会释放内存
+        
+        window.parent.arr.push(obj);
+        console.log("父窗口赋值完成");
+    }
+</script>
+</body>
+</html>

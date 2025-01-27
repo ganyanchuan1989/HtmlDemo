@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .container{
+      width: 80%;
+      margin: auto;
+      background-color: red;
+    }
+    
+    table {
+      border: 0;
+      width: 100%;
+    }
+    td,th{
+      border-left: 1px solid #ccc;
+      border-top:1px solid #ccc;
+      padding: 0 8px;
+    }
+    tr > td:last-child {
+      border-right: 1px solid #ccc;
+    }
+    tr > th:last-child {
+      border-right: 1px solid #ccc;
+    }
+    tbody > tr:last-child > td {
+      border-bottom: 1px solid #ccc;
+    }
+    tr > th {
+      background-color: #eee;
+    }
+    
+    .td-width {
+      width: 150px;
+    }
+
+    td {
+      max-width: 10px;
+    }
+   
+    .td-ell {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; 
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <table id="tbl" border="0" cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="td-width">Header 1</th>
+          <th class="td-width">Header 2</th>
+          <th >Header 3</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="width: 100px;">11111</td>
+          <td style="width: 200px;">22222</td>
+          <td>3333333</td>
+        </tr>
+        <tr>
+          <td>111 FDA福xa 11</td>
+          <td>22 发放福x 222</td>
+          <td>
+            <div class="td-ell">
+              男鞋女鞋儿童鞋老人鞋布鞋皮鞋高跟鞋男鞋女鞋儿童鞋老人鞋布鞋皮鞋高跟鞋男鞋女鞋儿童鞋老人鞋布鞋皮鞋高跟鞋男鞋女鞋儿童鞋老人鞋布鞋皮鞋高跟鞋
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table> 
+  </div>
+</body>
+</html>

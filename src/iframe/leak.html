@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<input type="button" value="创建iframe页面" onclick="createIframe()" />
+<input type="button" value="关闭iframe页面" onclick="closeIframe()" />
+<div id="content" style="width:500px;height:300px;border:1px solid black"></div>
+
+<script type="text/javascript">
+    var arr = new Array();
+    
+    function createIframe(){
+        const iframe = document.createElement("iframe");
+        iframe.src = "subiframe.html";
+        iframe.id = "ifr";
+        document.getElementById("content").appendChild(iframe);
+        console.log("创建iframe完成");
+    }
+    
+    function closeIframe(){
+        let iframe = document.getElementById("ifr");
+        iframe.src = "about:blank";
+        iframe.contentWindow.document.write('')
+        iframe.contentWindow.document.clear();
+        iframe.contentWindow.close();
+        iframe.parentNode.removeChild(iframe);
+        iframe = null;
+    }
+</script>
+</body>
+</html>
